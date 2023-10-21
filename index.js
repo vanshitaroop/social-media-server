@@ -8,7 +8,9 @@ import helmet from "helmet";
 import morgan from "morgan";
 import path from "path";
 import { fileURLToPath } from "url";
-
+// import {authRoutes} from "./routes/auth.js"
+import authRoutes from "./routes/auth.js"
+import { register } from "./controllers/auth.js";
 /* CONFIGURATIONS */
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename); 
@@ -30,10 +32,14 @@ const storage = multer.diskStorage({
         //cb: A callback function that you call to specify the destination directory.
      },
      filename:function(req,file,cb){
-        cb(null,file.orignalme);
+        cb(null,file.originalname);
      }
 })
 const upload = multer({storage});
+//  Routes with file 
+app.post("/auth/register",upload.single("picture"),register);
+//Routes
+app.use("/auth",authRoutes);
 // Mongoose Setup
 const PORT = process.env.PORT || 6001;
 mongoose.connect(process.env.MONGO_URL,{
@@ -41,4 +47,6 @@ mongoose.connect(process.env.MONGO_URL,{
     useUnifiedTopology:true
 }).then(()=>{
     app.listen(PORT,()=>{console.log(`Server running on port ${PORT}`)}); 
-}).catch((error)=>{onslotchange.log(`${error} did not connect`)});
+}).catch((error)=>{console.log(`${error} did not connect`)});
+//authentication:when you are registered and you logged in
+//authorization:When you want to make sure someone is logged in and allow her for certain actions 
